@@ -75,28 +75,56 @@ export function Cart() {
   
   /** Adicionando os tags dos cafés no array amountTags
    * Se o tag já existir, não adiciona*/ 
-  coffeesInCart.map(coffee => coffee.tags.map((tag) => {
-    if (!amountTags.includes(tag)) {
+  coffeesInCart.map((coffee) => coffee.tags.map((tag) => {
+    if (!amountTags.includes(tag)){
       amountTags.push(tag);
     }
-  }));
-  
+  }))
+
   // valor total dos cafés no carrinho
   const totalItemsPrice = coffeesInCart.reduce((currencyValue, coffee) => {
+    console.log(currencyValue);
     return currencyValue + coffee.price * coffee.quantity
+
   }, 0)
 
   
   function handleItemIncrement(itemId: string) {
-    // coloque seu código aqui
-  }
+    setCoffeesInCart((prevState) =>
+      prevState.map((coffee) => {
+        if (coffee.id === itemId){
+          const coffeeQuantity = coffee.quantity+1;
+          const subTotal = coffeeQuantity * coffee.price;
+          return {
+            ...coffee,
+            quantity: coffeeQuantity,
+            subTotal: subTotal
+          }
+        }
+        return coffee
+      }),
+    )}
 
   function handleItemDecrement(itemId: string) {
-    // coloque seu código aqui
-  }
+    setCoffeesInCart((prevState) =>
+      prevState.map((coffee) => {
+        if (coffee.id === itemId && coffee.quantity > 1){
+          const coffeeQuantity = coffee.quantity-1;
+          const subTotal = coffeeQuantity * coffee.price;
+          return {
+            ...coffee,
+            quantity: coffeeQuantity,
+            subTotal: subTotal
+          }
+        }
+        return coffee
+      }),
+    )}
 
   function handleItemRemove(itemId: string) {
-    // coloque seu código aqui
+    setCoffeesInCart((prevState) => 
+    coffeesInCart.filter(coffee => (coffee.id !== itemId))
+    )
   }
   
   return (
@@ -159,7 +187,7 @@ export function Cart() {
                 {new Intl.NumberFormat('pt-br', {
                   currency: 'BRL',
                   style: 'currency',
-                }).format(DELIVERY_PRICE)}
+                }).format(DELIVERY_PRICE * amountTags.length)}
               </span>
             </div>
 
